@@ -165,9 +165,9 @@
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/194782375">小白学PyTorch 动态图与静态图的浅显理解 - 知乎 (zhihu.com)</a></p>
 </blockquote>
 <p><strong>动态图：pytorch使用的，运算与搭建同时进行；灵活，易调节。即先有数据，再拿着数据按照算式算数。</strong></p>
-<p><img src="/images/%E5%8A%A8%E6%80%81%E5%9B%BE.png" alt="动态图"></p>
+<p><img src="/images/动态图.png" alt="动态图"></p>
 <p><strong>静态图：老tensorflow使用的，先搭建图，后运算；高效，不灵活；图搭建好后不能修改。即先有算式（模型），再把数据往里带。</strong></p>
-<p><img src="/images/%E9%9D%99%E6%80%81%E5%9B%BE.png" alt="动态图"></p>
+<p><img src="/images/静态图.png" alt="动态图"></p>
 <blockquote>
 <p>静态图先说明数据要怎么计算，然后再放入数据。假设要放入50组数据，运算图因为是事先构建的，所以每一次计算梯度都很快、高效；动态图的运算图是在数据计算的同时构建的，假设要放入50组数据，那么就要生成50次运算图。这样就没有那么高效。所以称为动态图。</p>
 </blockquote>
