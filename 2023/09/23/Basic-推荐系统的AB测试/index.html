@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="zh.CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Basic-推荐系统的AB测试 | 云璟QAQ</title><meta name="author" content="Syf"><meta name="copyright" content="Syf"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本博文引自王树森老师推荐系统。视频地址：概要03：推荐系统的AB测试_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  推荐系统算法工程师的日常工作就是改进模型和策略目标是提升推荐系统的业务指标，所有对模型和策略的改进，都需要经过线上的A&#x2F;B测试，用实验数据验证模型和策略是否有效。召回团队实现了一种GNN召回通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Basic-推荐系统的AB测试">
+<meta property="og:url" content="https://syf1844803351.github.io/2023/09/23/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84AB%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="云璟QAQ">
+<meta property="og:description" content="本博文引自王树森老师推荐系统。视频地址：概要03：推荐系统的AB测试_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  推荐系统算法工程师的日常工作就是改进模型和策略目标是提升推荐系统的业务指标，所有对模型和策略的改进，都需要经过线上的A&#x2F;B测试，用实验数据验证模型和策略是否有效。召回团队实现了一种GNN召回通">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-09-23T05:39:20.000Z">
+<meta property="article:modified_time" content="2023-09-23T05:42:01.815Z">
+<meta property="article:author" content="Syf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://syf1844803351.github.io/2023/09/23/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84AB%E6%B5%8B%E8%AF%95/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Basic-推荐系统的AB测试',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-23 13:42:01'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="云璟QAQ"><span class="site-name">云璟QAQ</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Basic-推荐系统的AB测试</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-09-23T05:39:20.000Z" title="Created 2023-09-23 13:39:20">2023-09-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-09-23T05:42:01.815Z" title="Updated 2023-09-23 13:42:01">2023-09-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8E%8B%E6%A0%91%E6%A3%AE%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">王树森推荐系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Basic-推荐系统的AB测试"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本博文引自王树森老师推荐系统。<br>视频地址：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1J44y1o7gf/?spm_id_from=333.788.recommend_more_video.0&amp;vd_source=c4a0ede13294272753679347b1eb1d75">概要03：推荐系统的AB测试_哔哩哔哩_bilibili</a><br>课件地址： <a target="_blank" rel="noopener" href="https://github.com/wangshusen/RecommenderSystem">https://github.com/wangshusen/RecommenderSystem</a></p>
+</blockquote>
+<p>推荐系统算法工程师的日常工作就是改进模型和策略目标是提升推荐系统的业务指标，所有对模型和策略的改进，都需要经过线上的A/B测试，用实验数据验证模型和策略是否有效。<br><img src="/images/AB测试.png" alt="AB测试"><br>召回团队实现了一种GNN召回通道，离线实验结果正向。但离线实验的结果有提升未必意味着线上实验也会有收益。做完离线实验，下一步是做线上的小流量A/B测试，也就是说，要把新的召回通道上线给用户使用观测用户的真实行为数据，比如日活留存点击交互。<em>小流量：意思是把GNN召回通道只给一小部分用户使用，而不是全部的用户。</em><br>这是因为新的召回通道到效果怎么样还不清楚，有可能会严重损害用户体验，所以先给随机选的10%用户使用，而不是一上来就给所有用户使用。除了判断GNN召回通道能带来多大的业务指标收益，A/B测试还可以帮助我们选择最优的参数。比如，GNN神经网络的深度可以是一层两层三层，不同的参数会有不同的效果，我们可以同时开三组A/B测试，哪组实验效果好就用那组参数。</p>
+<h2 id="随机分桶"><a href="#随机分桶" class="headerlink" title="随机分桶"></a>随机分桶</h2><p><img src="/images/随机分桶_1.png" alt="随机分桶_1"><br>做A/B测试需要对用户做随机分桶，比方说把用户分成十个桶，那么每个桶中有10%的用户。如果用户的数量足够大，那么每个桶的的DAU，留存，点击率，这些指标都是相等的。具体怎么做分桶呢，首先用哈希函数，把用户id映射成某个区间内的整数，然后把这些整数均匀随机分成b个桶。<br><img src="/images/随机分桶_2.png" alt="随机分桶_2"><br>我们把用户随机分成十个桶，每个桶中有10%的用户，我们用这样的分筒做A/B测试，比方说我们想要考察GNN召回通道对业务指标的影响，我们用123号桶作为三个实验组， 但是GNN的参数不一样，三个桶的神经网络深度分别是一层，两层，三层，用4号桶作为对照组。这四个桶唯一的区别就是，前三个桶用了GNN召回通道，4号桶没有用GNN。如果一个用户落在了1号桶，那么给他做推荐的时候，会用1号桶的策略，使用一层的GNN神经网络做召回，如果另一个用户落在了4号桶，那么给他做推荐的时候，就不要用GNN做召回，分别计算每个桶的业务指标，比如DAU，人均使用推荐的时长，点击率等等。如果某个实验组的指标显著优于对照组，则说明策略有效，比方说第二桶的业务指标最好，而且跟对照组的diff(差异)具有显著性，这就说明两层的GNN召回通道是有效果的，值得推全。<em>推全意思是把流量扩大到百分之百，给所有用户都使用两层GNN召回通道。</em></p>
+<h2 id="分层实验"><a href="#分层实验" class="headerlink" title="分层实验"></a>分层实验</h2><p>刚才讲了AB测试的基本思想，接下来要讲分层实验，工业界实际上就是这么做的，分层实验的目标就是解决流量不够用的问题，我举个例子解释一下，比方说小红书有很多个部门，分别负责推荐系统，用户界面广告，每个部门有好几个团队，比如推荐系统有召回、粗排、精排、重排的团队，所有部门和团队都需要不断做实验，这样同时会做几十个上百个A/B测试。假如我们把用户随机分成十个桶，每个桶有10%的流量，取一个桶做对照组，剩下九个桶做实验组，那么线上最多只能同时开九个AB测试，根本无法满足产品迭代的需求，解决方案就是分层实验。<br><img src="/images/分层实验.png" alt="分层实验"></p>
+<ul>
+<li>把实验分成很多层，比如分成召回、粗排、精排、重排、用户界面、广告这些层，例如之前召回通道就属于召回层。</li>
+<li>同层的实验之间需要互斥。举个例子，GNN实验占用召回层的四个桶，那么其他实验只能用剩余的六个桶。同层互斥的目的是，避免一个用户同时被两个召回实验影响，假如两个实验相互干扰，实验结果会变得不可控。</li>
+<li>不同层之间流量正交，每一层都独立随机对用户做分桶，每一层都可以独立用100%的用户做实验。召回和粗排的用户是独立随机划分的，召回的2号桶跟粗排的2号桶交集很小.<br><img src="/images/分层实验_2.png" alt="分层实验_2"><br>举个例子，召回层和精排层各自独立把用户分为十个桶，把召回的十个桶制作集合$u_1$到$u_{10}$，他们都是用户的集合，把精排的十个桶叫做集合$v_1$到$v_{10}$。设系统一共有n个用户，那么召回和金牌每个桶都有十分之n个用户，也就是说集合$u_i$和$v_j$的大小都是十分之n，把第$i$和$j$号召回桶记作$u_i$和$u_j$，他们的交集是空集，所以同一层实验之间是互斥的，两个召回实验不会同时作用到一个用户上。召回桶$u_i$和精排桶$v_g$各自大小都是十分之n，他们交集的大小是n%。一个用户不能同时受两个召回实验的影响，但可以同时受一个召回实验和一个精排实验的影响。一个召回实验和一个精排实验，各自作用在十分之n个用户上，那么有n%的用户同时受两个实验的影响，也就是说不同层正交。<br><img src="/images/同层互斥.png" alt="同层互斥"><br>我画个图再解释一遍，同层互斥和不同层正交，对于召回层，把用户随机分成十个桶，每个桶有10%的用户，如果GNN的实验占了四个桶，那么其他实验只能用剩余的六个桶，两组召回实验的用户是隔离开的，两组召回实验不能同时做到一个用户上。<br><img src="/images/不同层正交.png" alt="同层互斥"><br>不同层之间正交，比方说用户界面层2号桶，有10%的用户。层之间的分桶是随机独立的，所以用户界面层2号桶的用户被均匀打散到了召回层的十个桶。也就是说，用户界面的一个实验和召回的一个实验，可能会同时作用到一个用户身上。通常来说，用户界面实验和召回实验的效果，不容易相互增强或者相互抵消，所以我们允许一个用户同时受两层实验的影响。<br><img src="/images/互斥vs正交.png" alt="互斥vs正交"><br>如果所有实验全都用正交，不用互斥，那么就可以同时做无数组实验，既然正交有好处，为什么不能全都用正交呢。我再解释一下, 为什么要有互斥和正交这两种设定，而不能全都用正交。<br>用互斥的一个原因是，有的同类策略天然就互斥，不可能做到正交，比如对精排模型两种结构优化策略，天然就是互斥的。对同一个用户，不可能同时把两种精排模型结构都用上，只能给一组用户用第一种结构，给另一组用户用第二种结构，也就是做互斥的实验。<br>用互斥的另一个原因是，同类的策略之间相互会有影响。举个例子，可以推荐系统添加两条召回通道，两条召回通道并不排他，两条召回通道可以同时作用到一个用户上。比如这个用户的召回通道数量，从50增加到52，但是这样同类型的策略最好还是做互斥实验，避免相互的干扰，两组召回实验可能会同时发生作用，相互加强或者相互抵消，如果两条召回通道是互补的，那么1+1可能会大于二，效果相互增强；如果两条召回通道相似，那么添加两条召回通道，跟添加一条效果基本一样，两者会抵消1+1可能只等于一。如果不把两组实验用户做隔离，那么两组实验会同时作用到一部分用户上，测出的实验组和对照组的地方会不准。<em>详细原因我不解释了，感兴趣的话可以看我放在github上的讲义。</em><br>不同类型的策略通常不会相互干扰，可以把它们作为正交的两层，同时作用到某些用户上。比如有两种策略，一种是添加召回通道，另一种是优化粗排模型结构，两个策略效果通常是1+1=2，于是可以把召回作为一层，把粗排作为一层，两层正交，各自都可以用百分之百的用户做实验。</li>
+</ul>
+<h2 id="Holdout机制"><a href="#Holdout机制" class="headerlink" title="Holdout机制"></a>Holdout机制</h2><p><img src="/images/holdout机制_1.png" alt="holdout机制_1"><br>前面讲了A/B测试的基本原理和分层实验，接下来介绍Holdout机制。推荐系统有很多环节，比如召回、粗排、精排、重排，其实还有很多业务场景，每个业务场景都有自己一条链路，现场同一时间至少有几十个推进系统的实验，一个实验通常有一两个算法工程师负责，如果有效，那么就是算法工程师自己的业绩，公司需要考察一个部门，在一段时间内对业务指标总体的提升。比如推荐部门在两个月的成果，不能简单的把所有推荐实验的指标，收益都加起来作为部门整体业绩，这样相加是不可信的。实验叠加到一起通常会有折损，所以需要Holdout机制，取10%的用户作为holdout桶，相当于对照组。整个推荐系统使用剩余的90%用户做实验，跟holo桶互斥，只要算一下两者的diff，就知道整个推荐部门的业务指标收益了，当然想用10%跟90%做对比，需要对指标做个归一化。<br><img src="/images/holdout机制_2.png" alt="holdout_2机制"><br>具体是这样做分层整个大的系统分成推荐系统，用户界面，广告等很多大层，这些层之间正交。在推荐系统层，把用户随机分成两个桶，把10%的用户作为holdout，这个桶是干净的，任何新的实验都不能作用到holdout用户。用剩余90%用户做实验，把这些用户细分成四层，有召回、粗排、精排、重排，这些层之间正交，也就是说，召回可以用全部90%的用户做实验，粗排也可以用全部90%的用户做实验。<br><img src="/images/holdout机制_3.png" alt="holdout_3机制"><br>召回、粗排、精排、重排的有效实验，均会带来两边指标的diff，而且多个实验贡献的diff会叠加，如果公司以双月作为考核周期，那么每两个月结束的时候计算90%实验桶和10%holdout桶各种指标的diff，作为整个推荐部门对业务指标的贡献。<br><img src="/images/holdout机制_4.png" alt="holdout_4机制"><br>在每个考核周期结束之后会清除houldout桶，也就是上推全的实验，从90%用户扩大到100%的用户。然后随机重新划分用户，得到新的holdout桶和实验桶开始下一轮考核周期。由于划分是随机均匀的，新的holdout桶和实验桶的各种指标的diff几乎为零，可以开始公平的实验对比。在新的考核周期开始之后，会有召回、粗排、精排、重排的实验上线，有的实验会取得收益，并且推全。所有实验的收益都会叠加，让实验桶与holdout桶的diff逐渐扩大。</p>
+<h2 id="实验推全"><a href="#实验推全" class="headerlink" title="实验推全"></a>实验推全</h2><p>这节课最后一部分内容是实验推全和反转实验。推荐系统中所有实验都是从小流量开始的，如果业务指标的diff显著正向，则可以推全实验。<br><img src="/images/实验推全_1.png" alt="实验推全_1"><br>这里举个例子，我们做一个重排策略的实验。取一个桶作为实验组，一个桶作为对照组，实验一共影响了20%的用户，如果观测到显著正向的业务指标收益，则可以推全这个策略。把重排层的实验给关掉，这样就能把两个桶空出来，给其他实验用。<br><img src="/images/实验推全_2.png" alt="实验推全_2"><br>推全的时候新开一层。新策略会影响全部90%的用户，在小流量阶段，新策略作用到10%的用户上，会微弱的提升实验桶与houldout桶的diff。推全之后，新策略作用到90%的用户上，那么diff会扩大九倍。比方说AB测试发现，新策略会提升点击率九个万分点，小流量实验只作用到10%的用户上，所以只能把跟holdout桶的diff提升一个万分点。推全之后，理论上可以把def提升到九个万分点，跟AB测试得到的数据一致。</p>
+<h2 id="反转实验"><a href="#反转实验" class="headerlink" title="反转实验"></a>反转实验</h2><p><img src="/images/反转实验_1.png" alt="反转实验_1"><br>接下来我要讲反转实验，上线一个有效的策略之后, 需要观测很多业务指标。有的指标立刻会被新策略影响，而有的指标会有滞后性。比如点击率，点赞率，完播率等指标会立刻被新策略影响，实验上限一天或者实验上限十天，观测到指标差距不会太大。用户使用推荐的时长，人均阅读量，这些指标有点滞后，需要多观察几天指标才能稳定，用户留存指标滞后非常严重，有可能短期内观测不到显著变化，但在之后几个月会持续改善。指标滞后的原因不难理解，新策略改善用户体验需要过一段时间才能被用户感受到，感受到之后，用户对产品的粘性才会越来越高。也就是说实验观测的越久越好，可以让观测到的指标更准确。但算法工程师希望在关系到显著收益之后，一两周就推全实验，这样有很多好处。可以腾出桶来供其他实验使用，还可以基于新策略做后续实验。也就是说尽快推全有好处, 把实验保留很久也有好处, 这就是一对矛盾。实践中常用反转实验解决这对矛盾，用反转实验的话，既可以尽快推全，也可以长期观测实验指标。具体做法是在推全的新层中开一个旧策略的桶，这样就可以长期观测实验指标。<br><img src="/images/反转实验_2.png" alt="反转实验_2"><br>我画一下反转实验的示意图，这是为推全新策略开的新层。新层与召回、粗排、精排、重排，这些层都正交，可以在这个新层里开一个很小的反转桶，桶里的用户都用旧策略，可以把反转桶保留很久，长期观察新策略与旧策略的diff。一个考核周期结束之后会清除掉holdout桶，但这不会影响反转桶。清除holdout，会把推全的新策略应用到holdout的用户上，不会影响反转桶。当反转实验完成时，关闭反转实验，新策略会应用到反转桶的用户上，也就是实现真正推全，对所有用户都生效。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/images/3_总结.png" alt="3_总结"><br>最后总结一下这节课的内容，分层实验是工业界通用的做法，把容易相互增强或者相互抵消的实验放在同一层，比如把召回放在一层，把精排模型放在一层。同层互斥，意思是不允许同层的两个实验，同时影响同一位用户。不同层正交，意思是不同层的实验可以有重叠的用户。holdout也是工业界通用的机制，比如用来考察整个推荐部门，在两个月内对业务指标总的贡献。单独留出一个holdout桶，保留10%的用户，他们完全不受实验的影响，实验都在其他90%用户上做。所有的实验都是从小流量开始，如果策略有效，最终会被推全。推全，意思是扩大到90%的流量上，每推全一个策略都会新建一个推全层，覆盖90%用户，它跟其他层正交。反转实验是为了在尽早推全新策略的同时，还能长期观察各种指标。具体做法是，在新的推全层上保留一个小的反转桶，反转桶里的用户使用旧策略。可以把反转桶保留很久, 长期观察新旧策略的diff。<br>这节课介绍了AB测试的基础知识，以及工业界实际的做法，这节课就讲到这里，感谢大家观看。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io">Syf</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io/2023/09/23/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84AB%E6%B5%8B%E8%AF%95/">https://syf1844803351.github.io/2023/09/23/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84AB%E6%B5%8B%E8%AF%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/09/22/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E9%93%BE%E8%B7%AF/" title="Basic-推荐系统链路"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Basic-推荐系统链路</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Syf</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%88%86%E6%A1%B6"><span class="toc-number">1.</span> <span class="toc-text">随机分桶</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%82%E5%AE%9E%E9%AA%8C"><span class="toc-number">2.</span> <span class="toc-text">分层实验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Holdout%E6%9C%BA%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">Holdout机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%8E%A8%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">实验推全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E8%BD%AC%E5%AE%9E%E9%AA%8C"><span class="toc-number">5.</span> <span class="toc-text">反转实验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/23/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84AB%E6%B5%8B%E8%AF%95/" title="Basic-推荐系统的AB测试">Basic-推荐系统的AB测试</a><time datetime="2023-09-23T05:39:20.000Z" title="Created 2023-09-23 13:39:20">2023-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/22/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E9%93%BE%E8%B7%AF/" title="Basic-推荐系统链路">Basic-推荐系统链路</a><time datetime="2023-09-22T06:52:36.000Z" title="Created 2023-09-22 14:52:36">2023-09-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/22/Basic-%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="Basic-推荐系统的基本概念">Basic-推荐系统的基本概念</a><time datetime="2023-09-22T05:47:35.000Z" title="Created 2023-09-22 13:47:35">2023-09-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/14/test/" title="test">test</a><time datetime="2023-09-14T11:13:31.000Z" title="Created 2023-09-14 19:13:31">2023-09-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/14/%E5%B1%9E%E6%80%A7%E7%BB%9F%E8%AE%A1/" title="属性统计">属性统计</a><time datetime="2023-09-14T07:31:46.000Z" title="Created 2023-09-14 15:31:46">2023-09-14</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Syf</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
