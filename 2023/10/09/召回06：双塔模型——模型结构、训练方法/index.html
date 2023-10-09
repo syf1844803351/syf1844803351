@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh.CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>召回06：双塔模型——模型结构、训练方法 | 云璟QAQ</title><meta name="author" content="Syf"><meta name="copyright" content="Syf"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本博文引自王树森老师推荐系统。视频地址：召回06：双塔模型——模型结构、训练方法_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  复习这节课后面两节课的内容是双塔模型，双塔模型可以看作是矩阵补充的升级版。这是上节课介绍的矩阵补充模型，模型的输入是一个用户ID和一个物品ID模型，用两个embedding层把两个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="召回06：双塔模型——模型结构、训练方法">
+<meta property="og:url" content="https://syf1844803351.github.io/2023/10/09/%E5%8F%AC%E5%9B%9E06%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E3%80%81%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="云璟QAQ">
+<meta property="og:description" content="本博文引自王树森老师推荐系统。视频地址：召回06：双塔模型——模型结构、训练方法_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  复习这节课后面两节课的内容是双塔模型，双塔模型可以看作是矩阵补充的升级版。这是上节课介绍的矩阵补充模型，模型的输入是一个用户ID和一个物品ID模型，用两个embedding层把两个">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-10-09T13:03:35.000Z">
+<meta property="article:modified_time" content="2023-10-09T13:05:46.871Z">
+<meta property="article:author" content="Syf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://syf1844803351.github.io/2023/10/09/%E5%8F%AC%E5%9B%9E06%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E3%80%81%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '召回06：双塔模型——模型结构、训练方法',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-10-09 21:05:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="云璟QAQ"><span class="site-name">云璟QAQ</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">召回06：双塔模型——模型结构、训练方法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-10-09T13:03:35.000Z" title="Created 2023-10-09 21:03:35">2023-10-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-10-09T13:05:46.871Z" title="Updated 2023-10-09 21:05:46">2023-10-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8E%8B%E6%A0%91%E6%A3%AE%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">王树森推荐系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="召回06：双塔模型——模型结构、训练方法"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本博文引自王树森老师推荐系统。<br>视频地址：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1YA4y1D75Q/?spm_id_from=333.788&amp;vd_source=c4a0ede13294272753679347b1eb1d75">召回06：双塔模型——模型结构、训练方法_哔哩哔哩_bilibili</a><br>课件地址： <a target="_blank" rel="noopener" href="https://github.com/wangshusen/RecommenderSystem">https://github.com/wangshusen/RecommenderSystem</a></p>
+</blockquote>
+<h2 id="复习"><a href="#复习" class="headerlink" title="复习"></a>复习</h2><p>这节课后面两节课的内容是双塔模型，双塔模型可以看作是矩阵补充的升级版。<br>这是上节课介绍的矩阵补充模型，模型的输入是一个用户ID和一个物品ID模型，用两个embedding层把两个ID映射到两个向量，用两个向量的内积，来预估用户对物品的兴趣分数，<strong>这个模型比较弱，只用到了用户和物品的ID，没有用到用户和物品的属性</strong>。<br><img src="/images/8_embedding_1.png" alt="8_embedding_1"></p>
+<h2 id="双塔模型"><a href="#双塔模型" class="headerlink" title="双塔模型"></a>双塔模型</h2><p>这节课介绍的双塔模型，可以看作是矩阵补充模型的升级，下面开始讲双塔模型的结构。<br>我们先来看用户的特征，我们知道用户ID还能从用户填写的资料，和用户行为中获取很多特征，包括离散特征和连续特征，所有这些特征不能直接输入神经网络，而是要先做一些处理。比如用embedding层把用户ID映射到一个向量，跟上节课的做法相同。用户还有很多离散特征，比如所在城市感兴趣的话题等等，用embedding层把用户的离散特征映射成向量，对于每个离散特征，用单独一个embedding层得到一个向量。比如用户所在城市用一个embedding层，用户感兴趣的话题用另一个embedding层，对于性别这样类别数量很少的离散特征，直接用one-hot编码就行，可以不做embedding。用户还有很多连续特征，比如年龄，活跃程度，消费金额等等，不同类型的连续特征有不同的处理方法。最简单的是做归一化，让特征均值是零，标准差是一，有些长尾分布的延续特征需要特殊处理，比如取log，比如做分桶。做完特征处理，得到很多特征向量，把这些向量都拼起来，输入神经网络。神经网络可以是简单的全连接网络，也可以是更复杂的结构，比如深度交叉网络。神经网络输出一个向量，这个向量就是对用户的表征，做召回要用到这个向量。<br><img src="/images/9_双塔模型用户表征.png" alt=""></p>
+<p>物品的特征也是用类似的方法处理，用embedding层处理物品ID和其他离散特征，用归一化，取对数，或者分桶等方法处理物品的连续特征。把得到的特征输入一个神经网络，神经网络输出的向量就是物品的表征，用于召回。<br><img src="/images/9_双塔模型物品表征.png" alt=""></p>
+<p>这样的模型就叫双塔模型，左边的塔提取用户的特征，右边的塔提取物品的特征，跟上节课的矩阵补充模型相比，双塔模型的不同之处，就在于使用了ID之外的多种特征作为双塔的输入。两个塔各输出一个向量，记作A和B。两个向量的内积就是模型最终的输出。<br><img src="/images/9_双塔模型_内积.png" alt=""></p>
+<p>预估用户对物品的兴趣，现在更常用余弦相似度。两个塔的输出分别记作向量A和B，余弦相似度，意思是两个向量夹角的余弦值，它等于向量内积除以A的二范数，再除以B的二范数。其实就相当于先对两个向量做归一化，然后再求内积。余弦相似度的大小，介于-1到+1之间。<br><img src="/images/9_双塔模型_余弦相似度.png" alt=""></p>
+<h2 id="双塔模型的训练"><a href="#双塔模型的训练" class="headerlink" title="双塔模型的训练"></a>双塔模型的训练</h2><p>这节课剩余的内容是双塔模型的训练，有三种训练双塔模型的方式。<br>第一种是pointwise，训练独立看待每个正样本和负样本，做简单的二元分类训练模型，把正样本负样本组成一个数据集，在数据集上做随机梯度下降训练双塔模型。<br>第二种训练双塔模型的方式是pairwise，每次取一个正样本，一个负样本组成一个二元组，损失函数用triplet hinge loss或者triplet logistic loss，可以参考下面这篇FACEBOOK发的论文。<br>第三种训练双塔模型的方式是listwise，每次取一个正样本和多个负样本组成一个list，训练方式，类似于多元分类，参考下面的文献二，这是YOUTUBE发的论文。<br><img src="/images/9_双塔模型的训练.png" alt=""></p>
+<h3 id="正负样本选择"><a href="#正负样本选择" class="headerlink" title="正负样本选择"></a>正负样本选择</h3><p>训练的时候要用到正样本和负样本，该如何选择正负样本呢。<br>正样本很简单，就是用户点击过的物品，用户点击过一个物品，就说明用户对这个物品感兴趣，负样本的意思是用户不感兴趣的，负样本的选择没有那么显然，在实践中，负样本的选择是比较讲究的，有几种看起来比较合理的负样本，比如没有被召回的；召回了但是被粗排精排淘汰的；还有曝光了但是用户没有点击的，该用哪种呢。下节课再详细讲解如何选择正负样本，感兴趣的话可以自己阅读，刚才提到的两篇论文，论文讲解了FACEBOOK，YOUTUBE如何选择正负样本，我们小红书基本是照着做的，再加一些自己的小技巧，取得了很好的效果。<br><img src="/images/9_正负样本的选择.png" alt=""></p>
+<h3 id="Pointwise训练"><a href="#Pointwise训练" class="headerlink" title="Pointwise训练"></a>Pointwise训练</h3><p>下面我具体讲解三种训练双塔模型的方式，第一种是pointwise训练，pointwise是最简单的训练方式，我们把召回看作简单的二元分类任务，正样本意思是历史记录显示用户对物品感兴趣，对于正样本，我们要鼓励向量A和B的cos相似度接近+1。负样本的意思是用户对物品不感兴趣，对于负样本，我们要鼓励向量A和B的cos相似度接近-1。这就是个很典型的二元分类问题。如果做pointwise训练，可以把正负样本的数量控制在一比二或者一比三，我也不知道为什么，但是互联网大厂的人都这么做，这算是业内的经验。<br><img src="/images/9_Pointwise训练.png" alt=""></p>
+<h3 id="Pairwise训练"><a href="#Pairwise训练" class="headerlink" title="Pairwise训练"></a>Pairwise训练</h3><p>第二种训练双塔模型的方式是pairwise。做训练的时候，每一组的输入是一个三元组，包括一个用户和两个物品，左边的物品是正样本，就是用户感兴趣的物品，右边的物品是负样本，是用户不感兴趣的物品，把用户的特征和物品的特征各自做变换，然后输入神经网络，最终输出三个向量，用户的特征向量记作a，两个物品的特征，向量记作b+和b-。两个物品塔是相同的，里面的embedding层和全连接层都用一样的参数。分别计算用户对两个物品的兴趣，用户对正样本的兴趣是向量a和向量b+的余弦相似度，这个值越大越好，最好是接近+1；用户对负样本的兴趣是，向量a和向量b-的余弦相似度，这个值越接近-1越好。<br><img src="/images/9_Pairwise训练_1.png" alt=""></p>
+<p>做pairwise训练的基本想法，是让用户对正样本的兴趣尽量大，对负样本的兴趣尽量小，也就是让向量a和b-的余弦相似度，大于向量a和b+的余弦相似度，而且两者之差越大越好。我们来推导一下损失函数，我们希望看到用户对正样本的兴趣很大，而对负样本的兴趣很小，最好是前者比后者大m这么多。这个m是个超参数，需要调，比如设置成一。如果前者比后者大了m那么就没有损失，否则如果用户对正样本的兴趣不够大，没有比负样本的兴趣大m这么多，就会有损失，损失等于$\cos(a,b^-)+m-\cos(a,b^+)$，这样就推导出了下面的triplet hinge loss，如果熟悉孪生网络，Siamese network，应该见过这种损失函数。训练的时候，每个训练样本都是个三元组向量，a是用户的表征，b+和b-分别是物品正样本和负样本的表征，我们希望损失函数越小越好，训练的过程就是对损失函数求最小化，用梯度更新双塔神经网络的参数.<br><img src="/images/9_Pairwise训练_2.png" alt=""></p>
+<p>triplet hinge loss只是一种损失函数，还有别的损失函数起到同样的作用。triplet logistic loss是这样定义的，其实就是把logistic函数作用到$\cos(a,b^-)-\cos(a,b^+)$。最小化logistic函数会鼓励这一项尽量小，也就是让$\cos(a,b^-)$尽量小，让$\cos(a,b^+)$尽量大。跟上面的triplet hinge loss，道理是一样的，都是让用户对正样本的兴趣分数尽量高，用户对负样本的兴趣分数尽量低。这里的$\sigma$是个大于零的超参数，控制损失函数的形状，$\sigma$需要手动设置。我们已经推导出了，triplet hinge loss和triple logistic loss，可以通过最小化这样的损失函数来训练双塔模型。训练样本都是三元组，其中一个用户，一个正样本物品，还有一个负样本物品。<br><img src="/images/9_Pairwise训练_3.png" alt=""></p>
+<h3 id="Listwise模型训练"><a href="#Listwise模型训练" class="headerlink" title="Listwise模型训练"></a>Listwise模型训练</h3><p>第三种训练双塔模型的方式是listwise。做listwise训练的时候，每次取一个正样本和很多负样本，需要一个用户，把它的特征向量记作a，取一个正样本，意思是历史记录显示用户喜欢这个物品，把这个物品的特征向量记作b+，还需要取N个负样本，把它们的特征向量及做$b_1^-$到$b_n^-$，做训练的时候，要鼓励a和正样本的余弦相似度尽量大，鼓励a和负样本的余弦相似度尽量小。<br><img src="/images/9_Listwise训练_1.png" alt=""></p>
+<p>下面我演示一下listwise训练具体怎么做。向量a和b+的余弦相似度，是个介于-1到+1之间的实数，意思是用户对正样本物品兴趣的预估分数，这个分数越大越好，最好是接近+1，这些cos相似度对应负样本，他们是用户对$n$个负样本兴趣的预估分数，这$n$个分数越小越好，最好是接近-1。把这$n+1$个分数输入softmax激活函数，激活函数输出$n+1$个分数，这些分数都介于0~1之间。最左边的分数$s^+$对应正样本，我们希望这个分数越大越好，最好是能接近1，这$n$个分数对应负样本，我们希望这些分数越小越好，最好都接近0。$y^+=1$是正样本的标签，意思是鼓励$s^+$接近1，负样本的标签是$y_1^-$到$y_n^-$，把它们都设置成0，意思是鼓励$s_1^-$到$s_n^-$都接近零，我们用$y$和$s$的交叉熵作为损失函数，训练的时候，最小化交叉熵，意思是鼓励softmax输出$s$接近标签$y$，其实交叉熵就等于$-\log s^+$。训练的时候最小化交叉熵，也就是最大化$s^+$，这就等价于最大化正样本的余弦相似度，最小化负样本的余弦相似度。<br><img src="/images/9_Listwise训练_2.png" alt=""></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我已经讲完了双塔模型和三种训练方式，最后总结一下这节课的内容。<br>这节课详细讲解了双塔模型，双塔模型顾名思义，有两个塔，一个用户塔，一个物品塔，两个塔各输出一个向量。向量的余弦相似度就是对兴趣的预估值，这个值越大，用户就越有可能对物品感兴趣。<br>有三种训练双塔模型的方式，一种是pointwise，每次用一个用户和一个物品，物品可以是正样本，也可以是负样本。第二种训练方式是pairwise，每次取一个用户，一个正样本物品，一个负样本物品，训练的目标是最小化Triplet loss，也就是让正样本的余弦相似度尽量大，负样本的余弦相似度尽量小。第三种训练方式是listwise，每次取一个用户，一个正样本物品，很多个负样本物品，训练的时候，用softmax激活函数和交叉熵损失函数，也是鼓励正样本的余弦相似度尽量大，负样本的余弦相似度尽量小。<br><img src="/images/9_总结_1.png" alt=""></p>
+<p>在结束这节课内容之前，我们讨论一种错误的召回模型的设计，大家一看到这种结构就应该知道，这是粗排或者精排的模型，而不是召回的模型，这种模型没办法应用到召回。下面这块结构跟双塔模型是一样的，都是分别提取用户和物品的特征，得到两个特征向量，但是上层的结构就不一样了，这里直接把两个向量做concatenation，然后输入一个神经网络，神经网络可以有很多层。这种神经网络结构属于前期融合，在进入全连接层之前就把特征向量拼起来了，这种前期融合的神经网络结构，跟前面讲的双塔模型有很大区别，双塔模型属于后期融合，两个塔在最终输出相似度的时候才融合起来。<br><img src="/images/9_总结_2.png" alt=""></p>
+<p>看一下图中的神经网络，这个神经网络最终输出一个实数作为预估分数，表示用户对物品的兴趣。再看一下这个部分，把两个特征向量拼起来，输入神经网络，这种前期融合的模型不适用于召回，假如把这种模型用于召回，就必须把所有物品的特征都挨个输入模型，预估用户对所有物品的兴趣，假设一共有1亿个物品，每给用户做一次召回，就要把这个模型跑1亿次，这种计算量显然不可行。如果用这种模型，就没办法用近似最近邻查找来加速计算，这种模型通常用于排序，从几千个候选物品中选出几百个，计算量不会太大，以后<strong>大家一看到这种前期融合的模型就要明白，这是排序模型，不是召回模型，召回只能用双塔那样的后期融合模型</strong>。<br><img src="/images/9_总结_3.png" alt=""></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io">Syf</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io/2023/10/09/%E5%8F%AC%E5%9B%9E06%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E3%80%81%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/">https://syf1844803351.github.io/2023/10/09/%E5%8F%AC%E5%9B%9E06%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E3%80%81%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/10/04/%E5%8F%AC%E5%9B%9E05%EF%BC%9A%E7%9F%A9%E9%98%B5%E8%A1%A5%E5%85%85%E3%80%81%E6%9C%80%E8%BF%91%E9%82%BB%E6%9F%A5%E6%89%BE/" title="召回05：矩阵补充、最近邻查找"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">召回05：矩阵补充、最近邻查找</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Syf</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">复习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">双塔模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="toc-number">3.</span> <span class="toc-text">双塔模型的训练</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E8%B4%9F%E6%A0%B7%E6%9C%AC%E9%80%89%E6%8B%A9"><span class="toc-number">3.1.</span> <span class="toc-text">正负样本选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pointwise%E8%AE%AD%E7%BB%83"><span class="toc-number">3.2.</span> <span class="toc-text">Pointwise训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pairwise%E8%AE%AD%E7%BB%83"><span class="toc-number">3.3.</span> <span class="toc-text">Pairwise训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Listwise%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-number">3.4.</span> <span class="toc-text">Listwise模型训练</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/09/%E5%8F%AC%E5%9B%9E06%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84%E3%80%81%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/" title="召回06：双塔模型——模型结构、训练方法">召回06：双塔模型——模型结构、训练方法</a><time datetime="2023-10-09T13:03:35.000Z" title="Created 2023-10-09 21:03:35">2023-10-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/04/%E5%8F%AC%E5%9B%9E05%EF%BC%9A%E7%9F%A9%E9%98%B5%E8%A1%A5%E5%85%85%E3%80%81%E6%9C%80%E8%BF%91%E9%82%BB%E6%9F%A5%E6%89%BE/" title="召回05：矩阵补充、最近邻查找">召回05：矩阵补充、最近邻查找</a><time datetime="2023-10-04T12:32:10.000Z" title="Created 2023-10-04 20:32:10">2023-10-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/30/%E5%8F%AC%E5%9B%9E04%EF%BC%9A%E7%A6%BB%E6%95%A3%E7%89%B9%E5%BE%81%E5%A4%84%E7%90%86/" title="召回04：离散特征处理">召回04：离散特征处理</a><time datetime="2023-09-30T02:57:46.000Z" title="Created 2023-09-30 10:57:46">2023-09-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/26/%E5%8F%AC%E5%9B%9E03%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%94%A8%E6%88%B7%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%EF%BC%88UserCF%EF%BC%89/" title="召回03：基于用户的协同过滤（UserCF）">召回03：基于用户的协同过滤（UserCF）</a><time datetime="2023-09-26T13:25:51.000Z" title="Created 2023-09-26 21:25:51">2023-09-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/26/%E5%8F%AC%E5%9B%9E02%EF%BC%9ASwing%E6%A8%A1%E5%9E%8B/" title="召回02：Swing模型">召回02：Swing模型</a><time datetime="2023-09-26T05:45:31.000Z" title="Created 2023-09-26 13:45:31">2023-09-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Syf</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
