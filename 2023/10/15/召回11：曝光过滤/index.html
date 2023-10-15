@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="zh.CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>召回11：曝光过滤 | 云璟QAQ</title><meta name="author" content="Syf"><meta name="copyright" content="Syf"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本博文引自王树森老师推荐系统。视频地址：召回11：曝光过滤 &amp; Bloom Filter_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  这节课内容是曝光过滤和Bloom Filter，曝光过滤通常是在召回阶段做，具体的方法就是用bloom filter。 曝光过滤曝光过滤是这样一个问题：在推荐系统中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="召回11：曝光过滤">
+<meta property="og:url" content="https://syf1844803351.github.io/2023/10/15/%E5%8F%AC%E5%9B%9E11%EF%BC%9A%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4/index.html">
+<meta property="og:site_name" content="云璟QAQ">
+<meta property="og:description" content="本博文引自王树森老师推荐系统。视频地址：召回11：曝光过滤 &amp; Bloom Filter_哔哩哔哩_bilibili课件地址： https:&#x2F;&#x2F;github.com&#x2F;wangshusen&#x2F;RecommenderSystem  这节课内容是曝光过滤和Bloom Filter，曝光过滤通常是在召回阶段做，具体的方法就是用bloom filter。 曝光过滤曝光过滤是这样一个问题：在推荐系统中">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-10-15T04:24:31.000Z">
+<meta property="article:modified_time" content="2023-10-15T04:31:02.953Z">
+<meta property="article:author" content="Syf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://syf1844803351.github.io/2023/10/15/%E5%8F%AC%E5%9B%9E11%EF%BC%9A%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '召回11：曝光过滤',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-10-15 12:31:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="云璟QAQ"><span class="site-name">云璟QAQ</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">召回11：曝光过滤</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-10-15T04:24:31.000Z" title="Created 2023-10-15 12:24:31">2023-10-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-10-15T04:31:02.953Z" title="Updated 2023-10-15 12:31:02">2023-10-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8E%8B%E6%A0%91%E6%A3%AE%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">王树森推荐系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="召回11：曝光过滤"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本博文引自王树森老师推荐系统。<br>视频地址：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1sa4y137LF/?spm_id_from=333.788&amp;vd_source=c4a0ede13294272753679347b1eb1d75">召回11：曝光过滤 &amp; Bloom Filter_哔哩哔哩_bilibili</a><br>课件地址： <a target="_blank" rel="noopener" href="https://github.com/wangshusen/RecommenderSystem">https://github.com/wangshusen/RecommenderSystem</a></p>
+</blockquote>
+<p>这节课内容是曝光过滤和Bloom Filter，曝光过滤通常是在召回阶段做，具体的方法就是用bloom filter。</p>
+<h2 id="曝光过滤"><a href="#曝光过滤" class="headerlink" title="曝光过滤"></a>曝光过滤</h2><p>曝光过滤是这样一个问题：在推荐系统中，如果用户看过某个物品，就不再把物品推荐给这个用户，小红书抖音都这样做曝光过滤，原因是<strong>实验表明，重复曝光同一个物品会损害用户体验</strong>，但也不是所有推荐系统都有曝光过滤，像youtube这样的长视频就没有曝光过滤，看过的可以再次推荐。<br>想要做曝光过滤，需要对于每个用户记录已经曝光给他的物品，一个用户历史上看过的物品可能会非常多，好在不需要存储所有的历史记录，只需要存储最近一段时间的就行。<br>以小红书推荐系统为例，只召回发布时间小于一个月的笔记，更老的笔记根本不会被召回，所以就不用对年龄大于一个月的笔记做曝光过滤，只需要记录每个用户最近一个月的曝光历史，用他们做曝光过滤。在做完召回之后，对召回的物品做曝光过滤，判断每个物品是否已经给该用户曝光过，如果已经曝光过，就需要从召回的结果中排除掉。<br>一位用户看过n个物品，本次召回了r个物品，如果靠暴力对比做曝光过滤，那么需要花费2n的时间，在小红书用户一个月的曝光量n的量级大约是几千，每次推荐召回量r的量级也是几千，暴力对比的计算量太大了，所以实践中不做暴力对比，而是用bloom filter。<br><img src="/images/14_曝光过滤.png" alt="12_双塔模型"></p>
+<h2 id="Bloom-Filter"><a href="#Bloom-Filter" class="headerlink" title="Bloom Filter"></a>Bloom Filter</h2><p>bloom filter是一种数据结构，发表在1970年，以他的发明者命名。推荐系统曝光过滤基本都是用bloom filter做的，它可以判断一个物品是否在以曝光的物品集合中。如果bloom filter的判断是no，那么该物品一定不在集合中；如果bloom filter的判断是yes，我们就不是那么确定了，只能说该物品很可能在集合中，但也存在误伤的概率。Bloom Filter可能把未曝光的物品误判为已经曝光，把这个未曝光的物品给过滤掉。<br>概括一下，如果根据bloom filter的判断做曝光过滤，肯定能干掉所有已经曝光的物品，用户绝对不可能重复看到同一个物品，但是bloom filter有一定的概率会误伤，召回的物品明明没有曝光过，却被bloom filter给干掉了。<br><img src="/images/14_Bloom-Filter_1.png" alt="14_Bloom Filter_1"></p>
+<p>Bloom filter是一种数据结构，它把物品的集合表示为一个向量，这个向量是$m$维的，每个元素是一个bit，要么是零，要么是一。<br>每个用户都有若干曝光物品，把这些物品表征为一个向量，也就是说系统要给每个用户存一个向量，向量需要$m$bits的存储。<br>bloom filter有k个哈希函数，每个哈希函数把物品id映射成介于0和$m-1$之间的整数，k和$m$都是需要设置的参数，后面会讲他们设置成多大。<br><img src="/images/14_Bloom-Filter_2.png" alt="14_Bloom Filter_1"></p>
+<p>接下来我要讲bloom filter，如何用k个哈希函数做曝光过滤。<br>我先讲最简单的情况，k的取值是一，也就是说只用一个哈希函数。boom filter需要用一个二进制向量做存储，向量的长度是$m$，也就是说存储一共需要花费$m$bits。初始的时候向量是全零的。<br><img src="/images/14_Bloom-Filter_3.png" alt="14_Bloom Filter_3"></p>
+<p>我们知道一个用户有哪些已经曝光过的物品，这是第一个物品的ID，哈希函数把它映射到这个位置，把这个位置的元素置为一；这是第二个物品的ID，哈希函数把它映射到这个位置，把这个位置的元素置为一。<br><img src="/images/14_Bloom-Filter_4.png" alt="14_Bloom Filter_4"></p>
+<p>哈希函数把第三物品的ID映射到这个位置，这个位置的元素已经是一了，不需要修改这个数值；哈希函数把第四个物品的ID映射到这个位置，这个位置原本是零，现在把它置为一；哈希函数把第五第六个物品都映射到这个位置，这个位置的元素已经是一了，不需要修改这个数值。<br>到此为止，我们已经把六个物品表征为一个向量，这个向量的元素有零，有一。<br><img src="/images/14_Bloom-Filter_5.png" alt="14_Bloom Filter_4"></p>
+<p>我们来看一下如何利用这个向量做曝光过滤，用户发起推荐请求之后召回很多物品，这是其中一个，它($ID_7$)之前没有曝光给用户，它被映射到这个位置，这里的元素是零，所以bloom filter判断这个物品之前没有曝光，这个判断是正确的，如果bloom filter认为没有曝光，那么这个物品肯定没有曝光。bloom filter不可能把已曝光的物品错判为未曝光。<br>这个物品($ID_5$)已经曝光，哈希函数把它映射到这个位置，这里的元素是一，意思是bloom filter认为这个物品已经曝光，bloom filter的判断是正确的。<br><img src="/images/14_Bloom-Filter_6.png" alt="14_Bloom Filter_4"></p>
+<p>这个物品($ID_8$)没有曝光，哈希函数把它映射到这个位置，这里的元素是一，bloom filter认为这个物品已经曝光，但这其实是个误判，bloom filter有一定概率，把未曝光的物品误判为已曝光，导致未曝光的物品被过滤掉，造成误伤。<br><img src="/images/14_Bloom-Filter_7.png" alt="14_Bloom Filter_8"></p>
+<p>刚才讲解了简化版的bloom filter，哈希函数的数量是k=1。接下来的例子中，哈希函数的数量是k=3。<br>初始的时候，二进制向量的元素全都是零。<br><img src="/images/14_Bloom-Filter_8.png" alt="14_Bloom Filter_8"></p>
+<p>这是个已经曝光的物品($ID_1$)，需要记录到向量上。k=3，所以用三个不同的哈希函数，把物品ID映射到三个位置上，把这三个位置上的元素全都置为一。<br>这也是个以曝光的物品($ID_2$)，用三个哈希函数把物品ID映射到三个位置上，把这三个位上的元素都置为一，如果某个位置的元素本身就是一，那么它不用被修改。<br><img src="/images/14_Bloom-Filter_9.png" alt="14_Bloom Filter_9"></p>
+<p>这是个召回的物品($ID_8$)，没有曝光，三个哈希函数把物品ID映射到这三个位置，假如这个物品已经曝光，那么三个位置上肯定都是一，但其中一个位置是零，说明这个物品未曝光，如果bloom filter判断物品未曝光，那么他一定没有曝光，bloom filter不会犯错。<br>这个召回的物品($ID_4$)已经曝光过，三个哈希函数把物品ID映射到这三个位置上，由于三个位置全都是一，bloom filter判定它已经曝光，会把这个物品给过滤掉，这个判断是正确的。<br><img src="/images/14_Bloom-Filter_10.png" alt="14_Bloom Filter_10"></p>
+<p>这个召回的物品还没有曝光，三个哈希函数把物品ID映射到这三个位置，由于三个位置全都是一，bloom filter判断这个物品已经曝光过，这其实是个误判。前面说过，bloom filter有一定概率，把未曝光的物品判定为已曝光，导致未曝光的物品被过滤掉，造成误伤。<br><img src="/images/14_Bloom-Filter_11.png" alt="14_Bloom Filter_11"></p>
+<p>我们来分析一下bloom filter误伤的概率，定义$n,m,k$这三个数，曝光物品的集合大小为$n$，二进制向量的维度为$m$，使用$k$个哈希函数。<br>这个公式给出了误伤概率$\delta$的大小，$\delta$取决于$n,m,k$这三个数。<br><strong>$n$越大，也就是曝光物品数量越多，那么误伤的概率就会越大</strong>。这是很显然的，曝光物品越多，往二进制向量写的一就越多，那么bloom filter就越容易出现误伤，如果向量中的一很多，那么未曝光的物品的$k$个位置，很可能恰好全都是一被误判为已经曝光。<br>$m$是二进制向量的长度，<strong>$m$越大，两个物品的哈希值就越不容易冲突，出现误伤的概率就越小</strong>，但是$m$越大需要的存储就越多。<br><strong>$k$是哈希函数的数量，太大或者太小都不好，它的大小有最优值</strong>。<br><img src="/images/14_Bloom-Filter_12.png" alt="14_Bloom Filter_12"></p>
+<p>人为设定可容忍的误伤概率为$\delta$，比方说能容忍1%的错误，那么设置$\delta$等于1%。<br>确定了误伤概率$\delta$，那么就有最优的参数$k$和$m$，哈希函数数量$k$是个很小的整数，$k=1.44<em>\ln{\frac{1}{\delta}}$，设置$m=2n</em>\ln{\frac{1}{\delta}}$。$m$的大小正比于$n$，$m$比$n$大几倍。也就是说，每个曝光物品只需要占几个bit的存储，用户历史记录上有$n$个曝光物品，只需要$m$等于$10n$ bits，就可以把误伤概率降低到1%以下。</p>
+<h2 id="曝光过滤的链路"><a href="#曝光过滤的链路" class="headerlink" title="曝光过滤的链路"></a>曝光过滤的链路</h2><p>接下来我要讲推荐系统中曝光过滤的链路。这是推荐系统的链路(上半)，用多路召回，然后经过粗排精排重排，最终选出一批物品曝光给用户。<br>这是曝光过滤的链路(下半)，把曝光的物品记录下来，更新bloom filter用于过滤召回的物品。<br><img src="/images/14_曝光过滤的链路_1.png" alt="14_曝光过滤的链路_1"></p>
+<p>App的前端有埋点，所有曝光的物品都会被记录下来，这个落表的速度要足够快，否则可能会出问题。用户推荐页面两次刷新也就间隔几分钟，快的话也就是一二十秒，在下一刷之前，就要把本次曝光的结果写到bloom filter上，否则下一刷很可能会出重复的物品。所以要用实时流处理，比如把曝光物品写入Kafka消息队列，用flink做实时计算。<br><img src="/images/14_曝光过滤的链路_2.png" alt="14_曝光过滤的链路_2"></p>
+<p>flink实时读取Kafka消息队列，计算曝光物品的哈希值，把结果写到bloom filter的二进制向量上。用这样的实时数据链路，在曝光发生几秒之后，这位用户的bloom filter就会被修改之后，就能避免重复曝光。<br>但实时流这部分也是最容易出问题的，如果挂掉了或者延迟特别大，那么用户上一刷在看过的物品又会出现。小红书的首页推荐以前经常出这种问题。<br><img src="/images/14_曝光过滤的链路_3.png" alt="14_曝光过滤的链路_3"></p>
+<p>曝光过滤具体用在召回完成之后。召回服务器请求曝光过滤服务，曝光过滤服务把这位用户的二进制向量发送给召回服务器，在召回服务器上，用bloom filter计算召回的物品的哈希值，再跟二进制向量做对比，把已经曝光的物品给过滤掉，剩余的物品都是未曝光的，发送给排序服务器。<br><img src="/images/14_曝光过滤的链路_4.png" alt="14_曝光过滤的链路_4"></p>
+<h2 id="Bloom-Fliter的缺点"><a href="#Bloom-Fliter的缺点" class="headerlink" title="Bloom Fliter的缺点"></a>Bloom Fliter的缺点</h2><p>我已经讲完了，推荐系统如何在召回阶段做曝光过滤。最后说一下boon filter这种数据结构的缺点：bloom filter把物品的集合表示成一个二进制向量，每往集合中添加一个物品，只需要计算出k个哈希值，然后把向量k个位置的元素值为一，k是哈希函数的数量。如果向量的元素本来就是一，那么就不需要做修改。<br>bloom filter有个缺点，只能添加物品，不支持删除物品，如果从集合中移除掉一个物品，没有办法消除这个物品对二进制向量的影响，不能简单把这个物品对应的k个元素，从一改成零，否则会影响其他物品，这是因为向量的元素是所有物品共享的，如果把向量的一个元素改成零，相当于把很多物品都移除掉了。<br>实践中，每天都需要从物品的集合中移除掉年龄大于一个月的物品。原因是这样的，小红书的首页只推荐年龄小于一个月的物品，超出一个月的物品不可能被召回，那么就没有必要对他们做曝光过滤，没有必要把它们记录在bloom filter的向量上。移除掉超龄物品，那么曝光物品的数量$n$会减小，误伤率会降低，对业务有好处，但可惜的是，bloom filter不支持物品的删除，想要删除一个物品，需要重新计算整个集合的二进制向量。<br><img src="/images/14_Bloom-Filter的缺点.png" alt="14_Bloom-Filter的缺点"></p>
+<p>这节课讲了推荐系统中的曝光过滤问题，以及bloom filter这种数据结构，这节课就讲到这里，感谢大家观看,</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io">Syf</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://syf1844803351.github.io/2023/10/15/%E5%8F%AC%E5%9B%9E11%EF%BC%9A%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4/">https://syf1844803351.github.io/2023/10/15/%E5%8F%AC%E5%9B%9E11%EF%BC%9A%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/10/15/%E5%8F%AC%E5%9B%9E10%EF%BC%9A%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE%E5%8F%AC%E5%9B%9E%E3%80%81%E4%BD%9C%E8%80%85%E5%8F%AC%E5%9B%9E%E3%80%81%E7%BC%93%E5%AD%98%E5%8F%AC%E5%9B%9E/" title="召回10：地理位置召回、作者召回、缓存召回"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">召回10：地理位置召回、作者召回、缓存召回</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Syf</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">曝光过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bloom-Filter"><span class="toc-number">2.</span> <span class="toc-text">Bloom Filter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4%E7%9A%84%E9%93%BE%E8%B7%AF"><span class="toc-number">3.</span> <span class="toc-text">曝光过滤的链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bloom-Fliter%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">Bloom Fliter的缺点</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/15/%E5%8F%AC%E5%9B%9E11%EF%BC%9A%E6%9B%9D%E5%85%89%E8%BF%87%E6%BB%A4/" title="召回11：曝光过滤">召回11：曝光过滤</a><time datetime="2023-10-15T04:24:31.000Z" title="Created 2023-10-15 12:24:31">2023-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/15/%E5%8F%AC%E5%9B%9E10%EF%BC%9A%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE%E5%8F%AC%E5%9B%9E%E3%80%81%E4%BD%9C%E8%80%85%E5%8F%AC%E5%9B%9E%E3%80%81%E7%BC%93%E5%AD%98%E5%8F%AC%E5%9B%9E/" title="召回10：地理位置召回、作者召回、缓存召回">召回10：地理位置召回、作者召回、缓存召回</a><time datetime="2023-10-15T04:23:49.000Z" title="Created 2023-10-15 12:23:49">2023-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/14/%E5%8F%AC%E5%9B%9E09%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B-%E8%87%AA%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/" title="召回09：双塔模型+自监督学习">召回09：双塔模型+自监督学习</a><time datetime="2023-10-14T04:15:28.000Z" title="Created 2023-10-14 12:15:28">2023-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/10/%E5%8F%AC%E5%9B%9E08%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E7%BA%BF%E4%B8%8A%E6%9C%8D%E5%8A%A1%E3%80%81%E6%A8%A1%E5%9E%8B%E6%9B%B4%E6%96%B0/" title="召回08：双塔模型——线上服务、模型更新">召回08：双塔模型——线上服务、模型更新</a><time datetime="2023-10-10T12:04:15.000Z" title="Created 2023-10-10 20:04:15">2023-10-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/10/%E5%8F%AC%E5%9B%9E07%EF%BC%9A%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E6%AD%A3%E8%B4%9F%E6%A0%B7%E6%9C%AC/" title="召回07：双塔模型——正负样本">召回07：双塔模型——正负样本</a><time datetime="2023-10-10T08:47:11.000Z" title="Created 2023-10-10 16:47:11">2023-10-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Syf</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
